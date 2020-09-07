@@ -90,6 +90,8 @@ function startGame() {
         qs("body").classList.add("dark");
     }
 
+    // show board
+    id("board").classList.remove("hidden");
     //show number container
     for (let i = 0; i < id("number-container").children.length; i++) {
         id("number-container").children[i].classList.remove("hidden");
@@ -110,11 +112,16 @@ function startTimer() {
 
 // converts seconds into MM:SS format
 function timeConversion(time) {
-    let minutes = Math.floor(time/60);
-    if (minutes < 10) minutes = "0" + minutes;
     let seconds = time % 60;
     if (seconds < 10) seconds = "0" + seconds;
-    return minutes + ":" + seconds;
+    let minutes = Math.floor(time/60);
+    let hours = Math.floor(minutes/60);
+    if (hours > 0) {
+        minutes = minutes % 60;
+        if (minutes < 10) minutes = "0" + minutes;
+        return hours + ":" + minutes + ":" + seconds;
+    }
+    else return minutes + ":" + seconds;
 }
 
 function generateBoard(board) {
@@ -186,6 +193,10 @@ function updateMove() {
             // clear selected variables
             selectedTile = null;
             selectedNum = null;
+            // check if board is complete
+            if (checkDone()) {
+                endGame();
+            }
         }
         // if the number does not match solution
         else {
@@ -208,6 +219,20 @@ function updateMove() {
             }, 1000);
         }
     }
+}
+
+function checkDone() {
+    let tiles = qsa(".tile");
+    for (let i = 0; i < tiles.length; i++) {
+        if (tiles[i].textContent === "") return false;
+    }
+    return true;
+}
+
+function endGame() {
+    disableSelect = true;
+    clearInterval(timer);
+    id("timer").textContent = "All done! Time: " + timeConversion(timePassed);
 }
 
 function checkCorrect(tile) {

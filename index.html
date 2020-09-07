@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>Sudoku</title>
     <link rel="stylesheet" href="style.css">
+    <style>@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');</style>
 </head>
 <header>
     <h1>Sudoku</h1>
@@ -27,7 +28,7 @@
         <p id="timer"></p>
     </div>
     <div id="game">
-        <div id="board"></div>
+        <div id="board" class="hidden"></div>
         <div id="number-container" class="hidden">
             <p id="one"   class="hidden">1</p>
             <p id="two"   class="hidden">2</p>
@@ -43,7 +44,7 @@
 
     <script src="index.js"></script>
 </body>
-<footer>
+<footer class="hidden">
     <p>Made by Tyler Sutton</p>
 </footer>
 </html>

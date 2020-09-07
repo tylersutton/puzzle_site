@@ -3,7 +3,10 @@
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
+    
+    font-family: 'Roboto Mono', monospace;
+    background: linear-gradient(to right, rgb(15, 22, 46), rgb(15, 39, 59));
+    color: white;
 }
 
 body.dark {
@@ -14,11 +17,12 @@ body.dark {
 header {
     text-align: center;
     padding-bottom: 10px;
-    border-bottom: 1px solid #666;
 }
 
 h1 {
     font-size: 40pt;
+    padding: 0px;
+    margin: 20px 0 6px 0;
 }
 
 #setup-game {
@@ -28,29 +32,67 @@ h1 {
 
 #setup-game > * {
     margin-bottom: 10px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 30px;
+    padding-right: 30px;
     display: flex;
     align-items: center;
 }
 
 #setup-game > * > * {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 6px;
+    padding-right: 6px;
     font-size: 14pt;
     display: flex;
     align-items: center;
 }
 
-button {
-    justify-self: center;
+#diff > label {
+    cursor: pointer;
+    transform: scale(0.98);
+}
 
+#diff > label:hover {
+    transform: scale(0.92);
+}
+
+#theme > label {
+    cursor: pointer;
+}
+
+#theme > label:hover {
+    transform: scale(0.92);
+}
+
+button {
+    display: inline-block;
+    border: none;
+    border-radius: 10px;
+    justify-self: center;
+    width: 160px;
+    height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: darkslateblue;
+    color: white;
+}
+
+button:hover {
+    cursor: pointer;
+    outline: none;
+    background-color: rgb(44, 38, 87);
+    transform: scale(0.98);
+}
+
+button:focus {
+    outline: none;
 }
 
 p#timer {
     font-size: 25pt;
     font-weight: bold;
     text-align: center;
+    padding: 0px;
+    margin: 10px 0 20px 0;
 }
 
 #game {
@@ -64,6 +106,9 @@ p#timer {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    position: relative;
+    bottom: 3px;
+    left: 140px;
 }
 
 #number-container > p {
@@ -74,17 +119,28 @@ p#timer {
     font-size: 32pt;
     margin: 2px 2px 2px 2px;
     text-align: center;
+    background: #dedede;
+    color: black;
+    cursor: pointer;
+    box-shadow: 0 4px 6px 4px rgba(0, 0, 0, 0.18), 0 4px 6px 4px rgba(0, 0, 0, 0.3);
+}
+
+#number-container > p.selected {
+    background-color: #aaa;
 }
 
 #board {
-    padding-top: 10px;
-    margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-content: flex-start;
-    width: 600px;
-    height: 600px;
+    width: 562px;
+    height: 562px;
+    position: relative;
+    left: 128px;
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.8), 0 6px 20px 0 rgba(0, 0, 0, 0.8);
 }
 
 .tile {
@@ -95,14 +151,15 @@ p#timer {
     margin: 0px;
     vertical-align: middle;
     font-size: 32pt;
+    color: black;
 }
 
 .tile.selected {
-    background-color: rgb(126, 211, 226);
+    background-color: #bbb;
 }
 
 p.selected {
-    background-color: rgb(126, 211, 226);
+    background-color: #bbb;
 }
 
 p.incorrect {
