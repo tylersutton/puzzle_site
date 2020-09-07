@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<header>
+    <h1>Sudoku</h1>
+    <div id="setup-game">
+        <div id="diff">
+            <h2>Choose Difficulty:</h2>
+            <label><input id="diff-easy" type="radio" name="diff" value="easy" checked>Easy</label>
+            <label><input id="diff-medium" type="radio" name="diff" value="medium">Medium</label>
+            <label><input id="diff-hard" type="radio" name="diff" value="hard">Hard</label>
+        </div>
+        <div id="theme">
+            <h2>Theme: </h2>
+            <label><input id="theme-light" type="radio" name="theme" value="light" checked>Light</label>
+            <label><input id="theme-dark" type="radio" name="theme" value="dark">Dark</label>
+        </div>
+    </div>
+    <button id="start-btn">Create New Game!</button>
+</header>
+<body>
+    <div id="stats">
+        <p id="timer"></p>
+    </div>
+    <div id="game">
+        <div id="board"></div>
+        <div id="number-container" class="hidden">
+            <p id="one">1</p>
+            <p id="two">2</p>
+            <p id="three">3</p>
+            <p id="four">4</p>
+            <p id="five">5</p>
+            <p id="six">6</p>
+            <p id="seven">7</p>
+            <p id="eight">8</p>
+            <p id="nine">9</p>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+<footer>
+    <p>Made by Tyler Sutton</p>
+</footer>
+</html>

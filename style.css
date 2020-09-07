@@ -1,0 +1,117 @@
+.hidden {
+    display: none;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body.dark {
+    background-color: #333;
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #666;
+}
+
+h1 {
+    font-size: 40pt;
+}
+
+#setup-game {
+    display: flex;
+    justify-content: center;
+}
+
+#setup-game > * {
+    margin-bottom: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+    display: flex;
+    align-items: center;
+}
+
+#setup-game > * > * {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 14pt;
+    display: flex;
+    align-items: center;
+}
+
+button {
+    justify-self: center;
+
+}
+
+p#timer {
+    font-size: 25pt;
+    font-weight: bold;
+    text-align: center;
+}
+
+#game {
+    display: flex;
+    justify-content: center;
+}
+
+#number-container > p {
+    border: 1px solid #666;
+    border-radius: 20%;
+    width: 60px;
+    height: 60px;
+    font-size: 32pt;
+    margin-left: 50px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#board {
+    padding-top: 10px;
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    width: 600px;
+    height: 600px;
+}
+
+.tile {
+    border: 1px solid #666;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    margin: 0px;
+    vertical-align: middle;
+    font-size: 32pt;
+}
+
+.tile.selected {
+    background-color: rgb(126, 211, 226);
+}
+
+p.selected {
+    background-color: rgb(126, 211, 226);
+}
+
+p.incorrect {
+    color: red;
+}
+
+.rightBorder {
+    border-right: 3px solid #666;
+}
+
+.bottomBorder {
+    border-bottom: 3px solid #666;
+}
+
+footer {
+    background-color: lightgray;
+    text-align: center;
+}
