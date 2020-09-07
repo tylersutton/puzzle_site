@@ -91,7 +91,9 @@ function startGame() {
     }
 
     //show number container
-    id("number-container").classList.remove("hidden");
+    for (let i = 0; i < id("number-container").children.length; i++) {
+        id("number-container").children[i].classList.remove("hidden");
+    }
 }
 
 function startTimer() {
