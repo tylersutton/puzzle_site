@@ -1,10 +1,17 @@
 "use strict";
 
 // manually load boards for now
+
+const easy = [
+    "68532917497-4853262-4761--936257498154961873271829346582394651719-852643456137298",
+    "685329174971485326234761859362574981549618732718293465823946517197852643456137298"
+  ];
+/*
 const easy = [
     "6------7------5-2------1---362----81--96-----71--9-4-5-2---651---78----345-------",
     "685329174971485326234761859362574981549618732718293465823946517197852643456137298"
   ];
+*/
   const medium = [
     "--9-------4----6-758-31----15--4-36-------4-8----9-------75----3-------1--2--3--",
     "619472583243985617587316924158247369926531478734698152891754236365829741472163895"
@@ -15,15 +22,24 @@ const easy = [
   ];
 
 // create variables
+var actionList = [];
+var action_it = -1;
 var timer;
 var timePassed;
 var selectedNum;
 var selectedTile;
 var disableSelect;
+var savedBoard;
 
 window.onload = function() {
     // Run startgame function when button is clicked
+    id("start-btn").classList.add("bigger");
     id("start-btn").addEventListener("click", startGame);
+    id("delete-btn").addEventListener("click", updateMove);
+    id("undo-btn").addEventListener("click", undoMove);
+    id("redo-btn").addEventListener("click", redoMove);
+    id("check-btn").addEventListener("click", checkBoard);
+    id("restart-btn").addEventListener("click", restartGame);
     // add click event listener to each number in number container
     for (let i = 0; i < id("number-container").children.length; i++) {
         id("number-container").children[i].addEventListener("click", function() {
@@ -47,8 +63,16 @@ window.onload = function() {
     }
     // add keydown event listener to window for number container (check for numbers entered)
     window.addEventListener('keydown', function(event) {
-        let key_num = Number(event.key) - 1;
-        if (key_num < 0 || key_num > 8) return;
+        if (event.key == "Backspace" || event.key == "Delete") {
+            if (!disableSelect && selectedTile) {
+                let remove = true;
+                updateMove(remove);
+                return;
+            }
+        }
+        let key_num = Number(event.key);
+        if (!key_num || key_num < 1 || key_num > 9) return;
+        key_num -= 1;
         // if selecting is not disabled
         if (!disableSelect) {
             // if number is already selected
@@ -68,27 +92,21 @@ window.onload = function() {
     });
 }
 
-function startGame() {
-    let board;
-    if (id("diff-easy").checked) board = easy[0];
-    else if (id("diff-medium").checked) board = medium[0];
-    else board = hard[0];
-    
+function restartGame() {
+    if (!confirm("Are you sure you want to restart?")) {
+        return;
+    }
     // enables selecting numbers and tiles
     disableSelect = false;
 
     // create board based on difficulty
-    generateBoard(board);
+    generateBoard(savedBoard);
+
+    // clear timer
+    if (timer) clearInterval(timer);
 
     // starts timer
     startTimer();
-
-    // sets theme based on input
-    if (id("theme-light").checked) {
-        qs("body").classList.remove("dark");
-    } else {
-        qs("body").classList.add("dark");
-    }
 
     // show board
     id("board").classList.remove("hidden");
@@ -96,6 +114,40 @@ function startGame() {
     for (let i = 0; i < id("number-container").children.length; i++) {
         id("number-container").children[i].classList.remove("hidden");
     }
+    id("game-buttons-container").classList.remove("hidden");
+}
+
+function startGame() {
+    if (timer && !confirm("Are you sure you want to start a new game?")) {
+        return;
+    }
+    let board;
+    if (id("diff-easy").checked) board = easy[0];
+    else if (id("diff-medium").checked) board = medium[0];
+    else board = hard[0];
+    savedBoard = board;
+    // enables selecting numbers and tiles
+    disableSelect = false;
+
+    // create board based on difficulty
+    generateBoard(board);
+
+    // clear timer
+    if (timer) clearInterval(timer);
+
+    // starts timer
+    startTimer();
+
+    // resize new game button
+    id("start-btn").classList.remove("bigger");
+
+    // show board
+    id("board").classList.remove("hidden");
+    //show number container
+    for (let i = 0; i < id("number-container").children.length; i++) {
+        id("number-container").children[i].classList.remove("hidden");
+    }
+    id("game-buttons-container").classList.remove("hidden");
 }
 
 function startTimer() {
@@ -180,43 +232,86 @@ function generateBoard(board) {
     }
 }
 
-function updateMove() {
-    // if a tile and number are selected
-    if (selectedTile && selectedNum) {
-        // set the tile to the correct number
-        selectedTile.textContent = selectedNum.textContent;
-        // if the number matches the corresponding number in the number key
-        if (checkCorrect(selectedTile)) {
-            // deselect the tile
-            selectedTile.classList.remove("selected");
-            selectedNum.classList.remove("selected");
-            // clear selected variables
-            selectedTile = null;
-            selectedNum = null;
-            // check if board is complete
-            if (checkDone()) {
-                endGame();
-            }
+function checkBoard() {
+    let tiles = qsa(".tile");
+    let done = true;
+    for (let i = 0; i < tiles.length; i++) {
+        if (!checkCorrect(tiles[i])) {
+            if (tiles[i].textContent != "") tiles[i].classList.add("incorrect");
+            done = false;
         }
-        // if the number does not match solution
-        else {
-            // disable selecting new numbers for 1 second
-            disableSelect = true;
-            // make tile turn red
-            selectedTile.classList.add("incorrect");
-            //run in 1 second
-            setTimeout(function() {
-                // reenable selecting numbers
-                disableSelect = false;
-                // restore tile color and remove tile/number selection
-                selectedTile.classList.remove("incorrect");
-                selectedTile.classList.remove("selected");
-                selectedNum.classList.remove("selected");
-                // clear the tile text and clear selected tile/number
-                selectedTile.textContent = "";
-                selectedTile = null;
-                selectedNum = null;
-            }, 1000);
+    }
+    if (done) endGame();
+    else {
+        if (selectedTile) {
+            selectedTile.classList.remove("selected");
+            selectedTile.textContent = "";
+            selectedTile = null;
+        }
+        if (selectedNum) {
+            selectedNum.classList.remove("selected");
+            selectedNum = null;
+        }
+    }
+}
+
+function undoMove() {
+    if (action_it >= 0) {
+        //load the current action
+        let act = loadAction();
+        // undo that action
+        let tiles = qsa(".tile");
+        selectedTile = tiles[act.tile_idx];
+        selectedNum = id("number-container").children[act.num];
+        if (act.type == "remove") selectedTile.textContent = selectedNum.textContent;
+        if (act.type == "add") selectedTile.textContent = "";
+        // decrement action iterator
+        action_it--;
+        selectedTile = null;
+        selectedNum = null;
+    }
+}
+
+function redoMove() {
+    if (action_it < actionList.length-1) {
+        // increment action iterator
+        action_it++;
+        // load next action
+        let act = loadAction();
+        // redo the changes of that action
+        let tiles = qsa(".tile");
+        selectedTile = tiles[act.tile_idx];
+        selectedNum = id("number-container").children[act.num];
+        if (act.type == "add") selectedTile.textContent = selectedNum.textContent;
+        if (act.type == "remove") selectedTile.textContent = "";
+        selectedTile = null;
+        selectedNum = null;
+    }
+}
+
+function updateMove(remove = false) {
+    if (remove && selectedTile) {
+        saveAction("remove");
+        selectedTile.textContent = "";
+        if (selectedTile.classList.contains("incorrect")) selectedTile.classList.remove("incorrect");
+        selectedTile.classList.remove("selected");
+        if(selectedNum) selectedNum.classList.remove("selected");
+        selectedTile = null;
+        selectedNum = null;
+        return;
+    }
+    // if a tile and number are selected
+    else if (selectedTile && selectedNum) {
+        // set the tile to the correct number
+        selectedTile.classList.add("added");
+        selectedTile.textContent = selectedNum.textContent;
+        selectedTile.classList.remove("selected");
+        selectedNum.classList.remove("selected");
+        saveAction("add");
+        selectedTile = null;
+        selectedNum = null;
+        if(checkDone()) {
+            endGame();
         }
     }
 }
@@ -224,7 +319,7 @@ function updateMove() {
 function checkDone() {
     let tiles = qsa(".tile");
     for (let i = 0; i < tiles.length; i++) {
-        if (tiles[i].textContent === "") return false;
+        if (!checkCorrect(tiles[i])) return false;
     }
     return true;
 }
@@ -252,9 +347,6 @@ function clearPrevious() {
     for (let i = 0; i < tiles.length; i++) {
         tiles[i].remove();
     }
-    
-    // clear timer
-    if (timer) clearInterval(timer);
 
     // deselect any numbers
     for (let i = 0; i < id("number-container").children.length; i++) {
@@ -265,6 +357,28 @@ function clearPrevious() {
 }
 
 // Helper Functions
+
+function loadAction() {
+    if (action_it < 0 || action_it >= actionList.length)
+        console.error("loadAction(): invalid action_it");   
+    let act = actionList[action_it];
+    return act;
+    
+}
+
+function saveAction(action_type) {
+    if (action_it >= actionList.length)
+        console.error("saveAction(): invalid action_it");
+    let act = {
+        tile_idx: selectedTile.id,
+        num: (Number(selectedTile.textContent) - 1),
+        type: action_type
+    };
+    while(action_it != -1 && action_it < actionList.length - 1) 
+        actionList.pop();
+    actionList.push(act);
+    action_it = actionList.length - 1;
+}
 
 function id(id) {
     return document.getElementById(id);

@@ -6,30 +6,25 @@
     <link rel="stylesheet" href="style.css">
     <style>@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');</style>
 </head>
-<header>
+<header class ="noselect">
     <h1>Sudoku</h1>
     <div id="setup-game">
         <div id="diff">
-            <h2>Choose Difficulty:</h2>
+            <h2 class ="noselect">Difficulty:</h2>
             <label><input id="diff-easy"   type="radio" name="diff" value="easy" checked>Easy</label>
             <label><input id="diff-medium" type="radio" name="diff" value="medium">Medium</label>
             <label><input id="diff-hard"   type="radio" name="diff" value="hard">Hard</label>
         </div>
-        <div id="theme">
-            <h2>Theme: </h2>
-            <label><input id="theme-light" type="radio" name="theme" value="light" checked>Light</label>
-            <label><input id="theme-dark"  type="radio" name="theme" value="dark">Dark</label>
-        </div>
     </div>
     <button id="start-btn">Create New Game!</button>
 </header>
-<body>
+<body class ="noselect">
     <div id="stats">
         <p id="timer"></p>
     </div>
     <div id="game">
-        <div id="board" class="hidden"></div>
-        <div id="number-container" class="hidden">
+        <div id="board" class="hidden" class ="noselect"></div>
+        <div id="number-container" class ="noselect" class="hidden">
             <p id="one"   class="hidden">1</p>
             <p id="two"   class="hidden">2</p>
             <p id="three" class="hidden">3</p>
@@ -40,11 +35,19 @@
             <p id="eight" class="hidden">8</p>
             <p id="nine"  class="hidden">9</p>
         </div>
+        <div id="game-buttons-container" class="hidden" class ="noselect">
+            <p id="delete-btn">Delete</p>
+            <p id="undo-btn" class="left-half">Undo</p>
+            <p id="redo-btn" class="right-half">Redo</p>
+            <p id="check-btn">Check</p>
+            <p id="restart-btn">Restart</p>
+        </div>
     </div>
 
-    <script src="index.js"></script>
+    <script src="lodash.js"></script>
+    <script type="module" src="index.js"></script>
 </body>
-<footer class="hidden">
+<footer class="hidden" class ="noselect">
     <p>Made by Tyler Sutton</p>
 </footer>
 </html>
