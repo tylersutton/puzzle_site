@@ -1,12 +1,25 @@
 "use strict";
 
 // manually load boards for now
-/*
+
 const easy = [
     "68532917497-4853262-4761--936257498154961873271829346582394651719-852643456137298",
     "685329174971485326234761859362574981549618732718293465823946517197852643456137298"
   ];
+/*
+const easy = [
+    "6------7------5-2------1---362----81--96-----71--9-4-5-2---651---78----345-------",
+    "685329174971485326234761859362574981549618732718293465823946517197852643456137298"
+  ];
 */
+  const medium = [
+    "--9-------4----6-758-31----15--4-36-------4-8----9-------75----3-------1--2--3--",
+    "619472583243985617587316924158247369926531478734698152891754236365829741472163895"
+  ];
+  const hard = [
+    "-1-5-------97-42----5----7-5---3---7-6--2-41---8--5---1-4------2-3-----9-7----8--",
+    "712583694639714258845269173521436987367928415498175326184697532253841769976352841"
+  ];
 
 // create variables
 var actionList = [];
@@ -16,19 +29,10 @@ var timePassed;
 var selectedNum;
 var selectedTile;
 var disableSelect;
-var board;
-var solvedBoard;
-var easy_fn = "easy_puzzles.txt";
-var nextEasy;
-var nextEasySolved;
-var nextMedium;
-var nextMediumSolved;
-var nextHard;
-var nextHardSolved;
+var savedBoard;
 
 window.onload = function() {
     // Run startgame function when button is clicked
-    generateNextBoards();
     id("start-btn").classList.add("bigger");
     id("start-btn").addEventListener("click", startGame);
     id("delete-btn").addEventListener("click", updateMove);
@@ -66,10 +70,6 @@ window.onload = function() {
                 return;
             }
         }
-        if (event.key == "p") {
-            console.log(board);
-            console.log(solvedBoard);
-        }
         let key_num = Number(event.key);
         if (!key_num || key_num < 1 || key_num > 9) return;
         key_num -= 1;
@@ -92,61 +92,6 @@ window.onload = function() {
     });
 }
 
-function generateNextBoards() {
-    getBoard("easy");
-    // getBoard("medium");
-    // getBoard("hard");
-}
-
-function getBoard(difficulty) {
-    // get filename
-    let fn;
-    switch(difficulty) {
-        case("easy"): 
-            fn = 'easy_puzzles.txt';
-            break;
-        case("medium"):
-            fn = 'medium_puzzles.txt';
-            break;
-        case("hard"):
-            fn = 'hard_puzzles.txt';
-            break;
-    }
-    // read from file
-    var lines;
-    var r;
-    fetch(fn)
-        .then(function(response) {
-            return response.text();
-        })
-        .then(function(data) {
-            // make array of lines from file
-            lines = data.split('\n');
-            // console.log(data);
-            //Random item number
-            r = Math.floor(Math.random() * lines.length);
-            if (r%2) r++;
-        })
-        .then(function() {
-            //Get random line and fill boards
-            switch(difficulty) {
-                case("easy"): 
-                    nextEasy = lines[r];
-                    nextEasySolved = lines[r+1]
-                    break;
-                case("medium"):
-                    nextMedium = lines[r];
-                    nextMediumSolved = lines[r+1];
-                    break;
-                case("hard"):
-                    nextHard = lines[r];
-                    nextHardSolved = lines[r+1];
-                    break;
-            }
-        })
-    
-}
-
 function restartGame() {
     if (!confirm("Are you sure you want to restart?")) {
         return;
@@ -154,13 +99,8 @@ function restartGame() {
     // enables selecting numbers and tiles
     disableSelect = false;
 
-    while(actionList.length > 0) {
-        actionList.pop();
-    }
-    action_it = -1;
-
     // create board based on difficulty
-    generateBoard(board);
+    generateBoard(savedBoard);
 
     // clear timer
     if (timer) clearInterval(timer);
@@ -181,36 +121,16 @@ function startGame() {
     if (timer && !confirm("Are you sure you want to start a new game?")) {
         return;
     }
-    // getBoard();
-    let difficulty = "";
-    if (id("diff-easy").checked) difficulty = "easy";
-    else if (id("diff-medium").checked) difficulty = "medium";
-    else difficulty = "hard";
-
+    let board;
+    if (id("diff-easy").checked) board = easy[0];
+    else if (id("diff-medium").checked) board = medium[0];
+    else board = hard[0];
+    savedBoard = board;
     // enables selecting numbers and tiles
     disableSelect = false;
 
     // create board based on difficulty
-    switch(difficulty) {
-        case("easy"):
-            board = nextEasy;
-            solvedBoard = nextEasySolved;
-            break;
-        case("medium"):
-            board = nextMedium;
-            solvedBoard = nextMediumSolved;
-            break;
-        case("hard"):
-            board = nextHard;
-            solvedBoard = nextMediumSolved;
-    }
-
-    console.log(board);
-    console.log(solvedBoard);
-
-    generateNextBoards();
-
-    generateBoard();
+    generateBoard(board);
 
     // clear timer
     if (timer) clearInterval(timer);
@@ -256,10 +176,10 @@ function timeConversion(time) {
     else return minutes + ":" + seconds;
 }
 
-function generateBoard() {
+function generateBoard(board) {
     // clear previous board
     clearPrevious();
-    
+
     // Let used to increment tile id's
     let idCount = 0;
     for (let i = 0; i < 81; i++) {
@@ -343,16 +263,8 @@ function undoMove() {
         let tiles = qsa(".tile");
         selectedTile = tiles[act.tile_idx];
         selectedNum = id("number-container").children[act.num];
-        if (act.type == "remove") {
-            selectedTile.textContent = selectedNum.textContent;
-            selectedTile.classList.add("added");
-        }
-        if (act.type == "add") {
-            selectedTile.textContent = "";
-            if (selectedTile.classList.contains("incorrect")) {
-                selectedTile.classList.remove("incorrect");
-            }
-        }
+        if (act.type == "remove") selectedTile.textContent = selectedNum.textContent;
+        if (act.type == "add") selectedTile.textContent = "";
         // decrement action iterator
         action_it--;
         selectedTile = null;
@@ -370,15 +282,8 @@ function redoMove() {
         let tiles = qsa(".tile");
         selectedTile = tiles[act.tile_idx];
         selectedNum = id("number-container").children[act.num];
-        if (act.type == "add") { 
-            selectedTile.textContent = selectedNum.textContent;
-            selectedTile.classList.add("added");
-        }
-        if (act.type == "remove") {
-            if (selectedTile.classList.contains("incorrect")) {
-                selectedTile.classList.remove("incorrect");
-            }
-        }
+        if (act.type == "add") selectedTile.textContent = selectedNum.textContent;
+        if (act.type == "remove") selectedTile.textContent = "";
         selectedTile = null;
         selectedNum = null;
     }
@@ -426,8 +331,13 @@ function endGame() {
 }
 
 function checkCorrect(tile) {
+    // set solution based on difficulty
+    let solution;
+    if (id("diff-easy").checked) solution = easy[1];
+    else if (id("diff-medium").checked) solution = medium[1];
+    else solution = hard[1];
     // check if tile number is equal to solution's number
-    return (solvedBoard.charAt(tile.id) === tile.textContent);
+    return (solution.charAt(tile.id) === tile.textContent);
 }
 
 function clearPrevious() {
